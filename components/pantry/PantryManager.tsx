@@ -28,7 +28,7 @@ export default function PantryManager({ initialItems }: { initialItems: any[] })
         <section className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="p-4 bg-slate-50 border-b flex justify-between items-center">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Pantry Inventory ({initialItems.length})
+              What do you have? ({initialItems.length})
             </h3>
             <ClearButton />
           </div>

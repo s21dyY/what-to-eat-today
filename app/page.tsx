@@ -35,18 +35,18 @@ export default async function LandingPage() {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-orange-500/10 text-orange-600 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest mb-8 border border-orange-200">
               <Sparkles size={14} className="animate-bounce" />
-              Next-Gen Meal Planner
+              By your best friend Sandy Yang
             </div>
             
             <h1 className="text-7xl font-black text-slate-900 leading-tight mb-8">
-              Finally! Someone make <br />
+              Stop staring at the fridge. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500">
-                Decision!
+                Just cook it.
               </span>
             </h1>
             
             <p className="text-xl text-slate-500 mb-10 leading-relaxed max-w-md font-medium">
-              Make decision for your indecisive friends!
+              Build for indecisive kitchen
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
