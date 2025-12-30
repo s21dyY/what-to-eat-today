@@ -29,10 +29,11 @@ function LoginContent() {
 
     const handleGoogleLogin = async () => {
       const supabase = createClient()
-      await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+          // Ensure this is exactly /auth/callback
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
     }
