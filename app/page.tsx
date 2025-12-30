@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { ChefHat, Sparkles, ShieldCheck, Zap, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { LoadingSpinner } from "@/components/utli/LoadingSpinner";
 
 // Animation variants for cleaner code
 const fadeInUp = {

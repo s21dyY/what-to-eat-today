@@ -2,7 +2,6 @@
 import { createServerSideClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import { logout } from '@/app/auth/actions'
-import { deletePantryItem } from '@/app/auth/actions'
 
 // Components
 import PantryManager from '@/components/pantry/PantryManager';
