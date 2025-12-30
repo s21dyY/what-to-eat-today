@@ -108,7 +108,7 @@ export async function clearPantry() {
 
 
 // delete pantry items
-export async function deletePantryItem(id: string) {
+export async function deletePantryItem(id: number) {
   const supabase = await createServerSideClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
