@@ -119,7 +119,9 @@ export default function PantryItem({item, deletePantryItem: deleteItemAction,isS
               <Pencil size={18} />
             </button>
             
-            <form action={deleteItemAction}>
+            <form action={deleteItemAction}
+                onClick={(e) => e.stopPropagation()} //
+            >
               <button className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg group-hover:transition-all" type="submit">
                 <X size={18} />
               </button>

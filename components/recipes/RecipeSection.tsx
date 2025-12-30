@@ -125,7 +125,7 @@ export default function RecipeSection({ selectedItems }: { selectedItems: any[] 
               <BookOpen className="text-slate-300" />
             </div>
             <h3 className="text-slate-800 font-bold text-lg">No recipes yet</h3>
-            <p className="text-slate-400 text-sm">Select ingredients and let the AI brainstorm for you.</p>
+            <p className="text-slate-400 text-sm">Select ingredients to get some idea!</p>
           </div>
         )}
       </div>

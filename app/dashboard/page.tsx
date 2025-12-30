@@ -5,10 +5,7 @@ import { logout } from '@/app/auth/actions'
 import { deletePantryItem } from '@/app/auth/actions'
 
 // Components
-import AddItemForm from '@/components/pantry/AddItemForm'
-import ClearButton from '@/components/pantry/ClearButton'
 import PantryManager from '@/components/pantry/PantryManager';
-import RecipeSection from '@/components/recipes/RecipeSection'
 export default async function DashboardPage() {
   // Initialize the server-side Supabase client
   const supabase = await createServerSideClient()
