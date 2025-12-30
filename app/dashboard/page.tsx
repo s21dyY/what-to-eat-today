@@ -7,6 +7,7 @@ import { deletePantryItem } from '@/app/auth/actions'
 // Components
 import AddItemForm from '@/components/pantry/AddItemForm'
 import ClearButton from '@/components/pantry/ClearButton'
+import PantryManager from '@/components/pantry/PantryManager';
 import RecipeSection from '@/components/recipes/RecipeSection'
 export default async function DashboardPage() {
   // Initialize the server-side Supabase client
@@ -50,89 +51,13 @@ export default async function DashboardPage() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* LEFT COLUMN: PANTRY MANAGEMENT (5 Cols) */}
-          <div className="lg:col-span-6 space-y-6">
-            <section>
-              <AddItemForm />
-            </section>
-            <section className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-              {/* Table Header with integrated Clear Button */}
-              <div className="p-4 bg-slate-50 border-b flex justify-between items-center">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  Items
-                </h3>
-                <ClearButton /> {/* Moves the clear action into the natural header area */}
-              </div>
-
-              <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto custom-scrollbar">
-                {pantryItems && pantryItems.length > 0 ? (
-                  pantryItems.map((item) => {
-                    const isExpired = item.expires_at && new Date(item.expires_at) < new Date();
-                    const deleteItemWithId = deletePantryItem.bind(null, item.id); // Bind the ID for the server action
-
-                    return (
-                      <div key={item.id} className="p-4 flex justify-between items-center hover:bg-slate-50/80 transition-colors group">
-                        <div className="flex gap-4 items-center">
-                          {/* Visual Indicator */}
-                          <div className={`w-1.5 h-10 rounded-full ${isExpired ? 'bg-red-400' : 'bg-emerald-400'}`} />
-                          <div>
-                            <p className="font-bold text-slate-800 capitalize leading-none mb-1">{item.name}</p>
-                            <p className="text-xs font-medium text-slate-500">
-                              {item.amount} <span className="text-slate-400">{item.unit}</span>
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          {/* Status Badge */}
-                          <div className="text-right hidden sm:block">
-                            {item.expires_at && (
-                              <div className="flex flex-col items-end">
-                                <span className={`text-[10px] px-2 py-0.5 rounded-md font-black tracking-tighter ${
-                                  isExpired ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                                }`}>
-                                  {isExpired ? 'ALMOST EXPIRED' : 'FRESH'}
-                                </span>
-                                <span className="text-[10px] text-slate-400 mt-0.5 font-medium">{item.expires_at}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Individual Delete Action */}
-                          <form action={async () => {
-                                          'use server'
-                                          await deletePantryItem(String(item.id))
-                                        }}>
-                            <button 
-                              className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                              type="submit"
-                            >
-                              {/* Use a trash icon or simple X */}
-                              <span className="text-lg">✕</span>
-                            </button>
-                          </form>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="p-12 text-center">
-                    <p className="text-sm text-slate-400 italic">Your pantry is currently empty.</p>
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
-
-          {/* RIGHT COLUMN: RECIPE RECOMMENDATIONS (7 Cols) */}
-          <div className="lg:col-span-6">
-            <RecipeSection ingredients={pantryItems || []} />
-          </div>
-
-        </div>
+        
+        <PantryManager initialItems={pantryItems || []} />
       </main>
+
+      <footer className="text-center py-6 text-sm text-slate-400">
+        &copy; {new Date().getFullYear()} What To Eat Today. All rights reserved.
+      </footer>
     </div>
   )
 }

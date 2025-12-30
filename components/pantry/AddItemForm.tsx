@@ -28,12 +28,12 @@ export default function AddItemForm() {
           />
         </div>
 
-        {/* Row 2: Qty and Unit (Split 50/50) */}
+        {/* Row 2: Qty and Unit */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Quantity</label>
             <input
-              name="amount" type="number" step="0.1" placeholder="0" required
+              name="amount" type="number" step="1" placeholder="1" required
               className="w-full bg-slate-50 border-none ring-1 ring-slate-200 p-3 rounded-xl 
                         focus:ring-2 focus:ring-orange-500 focus:bg-white outline-none 
                         transition-all text-slate-900 font-medium"

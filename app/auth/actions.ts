@@ -1,6 +1,6 @@
 'use server' // run this code only on the server
 
-import { createServerSideClient } from '@/lib/supabase'
+import { createClient, createServerSideClient } from '@/lib/supabase'
 import { refresh, revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -87,6 +87,18 @@ export async function addPantryItem(formData: FormData) {
   revalidatePath('/dashboard')  // refresh the dashboard to show the new item
 }
 
+export async function updatePantryItem(id: string, updates: { name: string }) {
+  const supabase = await createServerSideClient()
+  const { error } = await supabase
+    .from('pantry')
+    .update(updates)
+    .eq('id', id)
+
+  if (!error) {
+    revalidatePath('/pantry') // Refresh the data
+  }
+}
+
 //clear all pantry items for the logged-in user
 export async function clearPantry() {
   const supabase = await createServerSideClient()
@@ -135,8 +147,10 @@ export async function generateRecipe(ingredients: any[]) {
     const chatCompletion = await groq.chat.completions.create({
         messages: [{
         role: "system",
-        content: `You are a creative chef. Return exactly 3 meal ideas based on the user's ingredients. 
-          The three meal ideas should be diverse and unique.
+        content: `You are a creative chef. 
+          Return exactly four meal ideas based on the user's ingredients. 
+          The four meal ideas should be diverse and unique and not repeat the same type of dish.
+          If the item is almost expired, prioritize using it in the recipes.
           Return ONLY a JSON object with this structure:
           {
             "ideas": [
