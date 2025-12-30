@@ -46,7 +46,7 @@ export default async function LandingPage() {
             </h1>
             
             <p className="text-xl text-slate-500 mb-10 leading-relaxed max-w-md font-medium">
-              Make decision with your undecisive friends!
+              Make decision for your indecisive friends!
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
