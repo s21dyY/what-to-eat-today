@@ -21,7 +21,12 @@ export async function login(formData: FormData) {
     password,
   })
 
-  if (error) return redirect('/login?error=failed')
+  if (error){
+    if (error.status === 400 || error.message.includes("Invalid login credentials")) {
+      return redirect('/login?error=Incorrect password or email. Please try again.')
+    }
+    return redirect(`/login?error=${error.message}`)
+  } 
 
   redirect('/dashboard')
 }
@@ -37,6 +42,10 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
+    console.log("Testing RRRRRL", error.status)
+    if (error.status === 422 || error.message.toLowerCase().includes("already")) {
+       return redirect('/login?error=It looks like you already have an account with this email. Try logging in!')
+    }
     return redirect('/login?error=Check your credentials')
   }
 
@@ -52,7 +61,22 @@ export async function logout() {
     console.error('Error logging out:', error.message)
     return
   }
-  redirect('/login') // Once signed out, send back to login page
+  redirect('/') // Once signed out, send back to login page
+}
+// User: Forget password
+export async function resetPasswordAction(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm-reset`,
+  })
+
+  if (error) {
+    return redirect('/forgot-password?error=' + error.message)
+  }
+
+  return redirect('/login?error=Check your email for the reset link!')
 }
 
 // Add pantry item for the logged-in user

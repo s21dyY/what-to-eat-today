@@ -1,8 +1,10 @@
 'use client'
+
 import { useState } from 'react'
 import { login, signup } from '@/app/auth/actions'
-import { ChefHat, Mail, Lock, Check, X, Eye, EyeOff } from 'lucide-react'
-
+import { ChefHat, Mail, Lock, Check, X, Eye, EyeOff,AlertCircle } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { createClient } from '@/supabase/client'
 function ValidationItem({ label, isMet }: { label: string; isMet: boolean }) {
   return (
     <div className={`flex items-center gap-2 transition-colors ${isMet ? 'text-emerald-600' : 'text-slate-400'}`}>
@@ -21,8 +23,19 @@ export default function LoginPage() {
       lower: /[a-z]/.test(password),
       special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     }
+    const handleGoogleLogin = async () => {
+      const supabase = createClient()
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+    }
 
     const isPasswordValid = Object.values(checks).every(Boolean)
+    const searchParams = useSearchParams()
+    const errorMsg = searchParams.get('error')
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4">
@@ -38,7 +51,18 @@ export default function LoginPage() {
           </div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h1>
           <p className="text-slate-500 font-medium">What's for dinner today?</p>
-        </div>
+        </div>  
+        
+        {/*Error Message for repeated signup*/}
+        {errorMsg && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+            <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
+            <p className="text-sm text-red-800 font-medium leading-tight">
+              {errorMsg}
+            </p>
+          </div>
+        )}
+        
 
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
           <form className="flex flex-col gap-6">
@@ -102,7 +126,7 @@ export default function LoginPage() {
 
               <button 
                 formAction={signup} 
-                disabled={!isPasswordValid} // <--- This disables the button
+                disabled={!isPasswordValid} // disables the button if password invalid
                 className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98] border-2 
                   ${isPasswordValid 
                     ? 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-slate-200' 
@@ -110,6 +134,14 @@ export default function LoginPage() {
                   }`}>
                 Create New Account
               </button>
+              <button 
+                onClick={handleGoogleLogin}
+                type="button" // Important: prevents form submission
+                className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 py-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+                    Continue with Google
+              </button>
+              
             </div>
           </form>
         </div>
