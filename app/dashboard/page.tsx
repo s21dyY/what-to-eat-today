@@ -103,7 +103,7 @@ export default async function DashboardPage() {
                           {/* Individual Delete Action */}
                           <form action={async () => {
                                           'use server'
-                                          await deletePantryItem(item.id)
+                                          await deletePantryItem(String(item.id))
                                         }}>
                             <button 
                               className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
