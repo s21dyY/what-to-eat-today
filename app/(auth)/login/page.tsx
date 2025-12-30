@@ -1,7 +1,29 @@
+'use client'
+import { useState } from 'react'
 import { login, signup } from '@/app/auth/actions'
-import { ChefHat, Mail, Lock } from 'lucide-react'
+import { ChefHat, Mail, Lock, Check, X, Eye, EyeOff } from 'lucide-react'
 
+function ValidationItem({ label, isMet }: { label: string; isMet: boolean }) {
+  return (
+    <div className={`flex items-center gap-2 transition-colors ${isMet ? 'text-emerald-600' : 'text-slate-400'}`}>
+      {isMet ? <Check size={14} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1.5 mr-1" />}
+      <span>{label}</span>
+    </div>
+  )
+}
 export default function LoginPage() {
+    const [password, setPassword] = useState('')
+    
+    // Validation Rules
+    const checks = {
+      length: password.length >= 8,
+      upper: /[A-Z]/.test(password),
+      lower: /[a-z]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    }
+
+    const isPasswordValid = Object.values(checks).every(Boolean)
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4">
       {/* Background Decorative Blob */}
@@ -45,16 +67,24 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <Lock className="..." size={18} />
                 <input 
                   id="password" 
                   name="password" 
                   type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required 
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-slate-900 focus:ring-2 focus:ring-orange-500 transition-all" 
-                  placeholder="••••••••"
+                  className="..." 
                 />
               </div>
+            </div>
+            {/* Real-time Validation UI */}
+            <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2 text-xs font-medium">
+                <p className="text-slate-400 uppercase tracking-widest font-bold mb-3">Requirements</p>
+                <ValidationItem label="At least 8 characters" isMet={checks.length} />
+                <ValidationItem label="Uppercase & Lowercase" isMet={checks.upper && checks.lower} />
+                <ValidationItem label="Special character (!@#$)" isMet={checks.special} />
             </div>
 
             <div className="flex flex-col gap-3 mt-4">
@@ -72,8 +102,12 @@ export default function LoginPage() {
 
               <button 
                 formAction={signup} 
-                className="w-full bg-white border-2 border-slate-100 text-slate-600 py-4 rounded-2xl font-bold hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98]"
-              >
+                disabled={!isPasswordValid} // <--- This disables the button
+                className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98] border-2 
+                  ${isPasswordValid 
+                    ? 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-slate-200' 
+                    : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed opacity-60'
+                  }`}>
                 Create New Account
               </button>
             </div>

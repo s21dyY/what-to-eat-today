@@ -120,7 +120,7 @@ export default function PantryItem({item, deletePantryItem: deleteItemAction,isS
             </button>
             
             <form action={deleteItemAction}
-                onClick={(e) => e.stopPropagation()} //
+                onClick={(e) => e.stopPropagation()} // when user click, check box won't be selected
             >
               <button className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg group-hover:transition-all" type="submit">
                 <X size={18} />
