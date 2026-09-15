@@ -1,5 +1,4 @@
 'use client'
-
 import Link from 'next/link'
 import { ChefHat, Sparkles, ShieldCheck, Zap, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'

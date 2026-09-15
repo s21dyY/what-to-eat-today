@@ -189,13 +189,13 @@ export async function generateRecipe(ingredients: any[]) {
         },
         { role: "user", content: `Ingredients: ${list}` }
       ],
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       response_format: { type: "json_object" }, // Forces JSON output
     });
 
-    return chatCompletion.choices[0]?.message?.content || "No recipe found.";
+    return chatCompletion.choices[0]?.message?.content || JSON.stringify({ ideas: [] });
   } catch (error) {
     console.error("Groq Error:", error);
-    return "The kitchen is closed! (API Error)";
+    return JSON.stringify({ ideas: [], error: "The kitchen is closed! (API Error)" });
   }
 }

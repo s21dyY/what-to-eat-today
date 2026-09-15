@@ -6,10 +6,15 @@ import AddItemForm from './AddItemForm';
 import ClearButton from './ClearButton';
 
 export default function PantryManager({ initialItems }: { initialItems: any[] }) {
+  // useState:memory vairable 
+  // <string[]>: typeScript, can only contain string, with start state as empty list ([])
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const handleToggle = (id: string) => {
+    // update memory
     setSelectedIds(prev => 
+      // i in filter is similar to i:nums, filter function will take boolean val and return that val
+      // in react, array are immutable, so we need to create new one (... = dump everything in prev into new array)
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };

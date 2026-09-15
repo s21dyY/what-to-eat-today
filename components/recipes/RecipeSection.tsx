@@ -8,12 +8,27 @@ import ReactMarkdown from 'react-markdown'
 export default function RecipeSection({ selectedItems }: { selectedItems: any[] }) {
   const [loading, setLoading] = useState(false);
   const [ideas, setIdeas] = useState<any[]>([]);
-  
+  const [error, setError] = useState<string | null>(null);
+
   const handleGenerate = async () => {
     setLoading(true);
-    const result = await generateRecipe(selectedItems);
-    setIdeas(JSON.parse(result).ideas);
-    setLoading(false);
+    setError(null);
+    try {
+      const result = await generateRecipe(selectedItems);
+      const parsed = JSON.parse(result);
+      if (parsed.error) {
+        setError(parsed.error);
+        setIdeas([]);
+      } else {
+        setIdeas(parsed.ideas || []);
+      }
+    } catch (err) {
+      console.error("Failed to parse recipe response:", err);
+      setError("Something went wrong generating recipes. Please try again.");
+      setIdeas([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,6 +97,11 @@ export default function RecipeSection({ selectedItems }: { selectedItems: any[] 
             {[1, 2].map((i) => (
               <div key={i} className="h-64 bg-white rounded-[2rem] border border-slate-100 animate-pulse" />
             ))}
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-[2rem] p-16 border-2 border-dashed border-red-100 text-center">
+            <h3 className="text-slate-800 font-bold text-lg">Couldn't generate recipes</h3>
+            <p className="text-slate-400 text-sm">{error}</p>
           </div>
         ) : ideas.length > 0 ? (
           ideas.map((idea, index) => (

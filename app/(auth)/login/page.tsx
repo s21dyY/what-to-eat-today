@@ -32,7 +32,7 @@ function LoginContent() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Ensure this is exactly /auth/callback
+          // redirect to callback
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
@@ -60,8 +60,8 @@ function LoginContent() {
 
             <div className="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
                 <form className="flex flex-col gap-6">
-                    {/* ... Rest of your form inputs (Email, Password, Validation UI, and Buttons) ... */}
-                    {/* Ensure you use setPassword and isPasswordValid here as usual */}
+                    
+                    {/*Email/PW form inputs */}
                     <div className="space-y-2">
                         <label htmlFor="email" className="block text-sm font-bold text-slate-700 ml-1">Email Address</label>
                         <input id="email" name="email" type="email" required className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-slate-900 focus:ring-2 focus:ring-orange-500" placeholder="chef@example.com" />
@@ -76,12 +76,14 @@ function LoginContent() {
                         />
                     </div>
 
+                    {/*PW Validation*/}
                     <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2 text-xs font-medium">
                         <ValidationItem label="At least 8 characters" isMet={checks.length} />
                         <ValidationItem label="Uppercase & Lowercase" isMet={checks.upper && checks.lower} />
                         <ValidationItem label="Special character (!@#$)" isMet={checks.special} />
                     </div>
-
+                    
+                    {/*User Action Button*/}
                     <div className="flex flex-col gap-3 mt-4">
                         <button formAction={login} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800">Log in</button>
                         <button formAction={signup} disabled={!isPasswordValid} className={`w-full py-4 rounded-2xl font-bold ${isPasswordValid ? 'bg-white border-slate-100 text-slate-600' : 'bg-slate-50 text-slate-300'}`}>Create New Account</button>
@@ -96,7 +98,7 @@ function LoginContent() {
     )
 }
 
-// 3. The exported page now just wraps the content in Suspense
+// Exported page now just wraps the content in Suspense
 export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4 relative">
