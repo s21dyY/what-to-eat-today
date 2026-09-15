@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { ChefHat, Sparkles, ShieldCheck, Zap, ArrowRight } from 'lucide-react'
+import { ChefHat, Sparkles, ShieldCheck, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 // Animation variants for cleaner code

@@ -2,12 +2,12 @@
 import { useState } from 'react'
 import { Sparkles, ChefHat, Loader2, BookOpen, ExternalLink } from 'lucide-react'
 import { generateRecipe } from '@/app/auth/actions'
-import ReactMarkdown from 'react-markdown'
+import type { PantryItem, RecipeIdea } from '@/lib/types'
 
 
-export default function RecipeSection({ selectedItems }: { selectedItems: any[] }) {
+export default function RecipeSection({ selectedItems }: { selectedItems: PantryItem[] }) {
   const [loading, setLoading] = useState(false);
-  const [ideas, setIdeas] = useState<any[]>([]);
+  const [ideas, setIdeas] = useState<RecipeIdea[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -100,7 +100,7 @@ export default function RecipeSection({ selectedItems }: { selectedItems: any[] 
           </div>
         ) : error ? (
           <div className="bg-white rounded-[2rem] p-16 border-2 border-dashed border-red-100 text-center">
-            <h3 className="text-slate-800 font-bold text-lg">Couldn't generate recipes</h3>
+            <h3 className="text-slate-800 font-bold text-lg">Couldn&apos;t generate recipes</h3>
             <p className="text-slate-400 text-sm">{error}</p>
           </div>
         ) : ideas.length > 0 ? (

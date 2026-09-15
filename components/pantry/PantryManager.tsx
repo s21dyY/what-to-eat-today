@@ -4,8 +4,9 @@ import PantryList from './PantryList';
 import RecipeSection from '@/components/recipes/RecipeSection';
 import AddItemForm from './AddItemForm';
 import ClearButton from './ClearButton';
+import type { PantryItem } from '@/lib/types';
 
-export default function PantryManager({ initialItems }: { initialItems: any[] }) {
+export default function PantryManager({ initialItems }: { initialItems: PantryItem[] }) {
   // useState:memory vairable 
   // <string[]>: typeScript, can only contain string, with start state as empty list ([])
   const [selectedIds, setSelectedIds] = useState<string[]>([]);

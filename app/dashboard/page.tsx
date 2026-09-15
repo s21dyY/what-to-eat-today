@@ -21,8 +21,12 @@ export default async function DashboardPage() {
   const { data: pantryItems, error: pantryError } = await supabase
   .from('pantry')
   .select('*')
-  .eq('user_id', user.id) 
-  .order('expires_at', { ascending: true }) 
+  .eq('user_id', user.id)
+  .order('expires_at', { ascending: true })
+
+  if (pantryError) {
+    console.error('Error fetching pantry items:', pantryError.message)
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900">

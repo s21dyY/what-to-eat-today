@@ -1,15 +1,9 @@
-import { createBrowserClient, createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// Create a single supabase client for interacting with database
-export function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
-
-// For Server Actions, Server Components, and Route Handlers
+// For Server Actions, Server Components, and Route Handlers.
+// For Client Components, use createClient from '@/supabase/client' instead —
+// this module imports next/headers and isn't safe in a client bundle.
 export async function createServerSideClient() {
   const cookieStore = await cookies()
 

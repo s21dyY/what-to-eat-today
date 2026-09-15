@@ -1,8 +1,10 @@
 'use server' // run this code only on the server
 
-import { createClient, createServerSideClient } from '@/lib/supabase'
-import { refresh, revalidatePath } from 'next/cache'
+import { createServerSideClient } from '@/lib/supabase'
+import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
+import type { PantryItem } from '@/lib/types'
 
 // recipie generation with Groq
 import Groq from "groq-sdk";
@@ -25,8 +27,8 @@ export async function login(formData: FormData) {
     if (error.status === 400 || error.message.includes("Invalid login credentials")) {
       return redirect('/login?error=Incorrect password or email. Please try again.')
     }
-    return redirect(`/login?error=${error.message}`)
-  } 
+    return redirect(`/login?error=${encodeURIComponent(error.message)}`)
+  }
 
   redirect('/dashboard')
 }
@@ -36,17 +38,21 @@ export async function signup(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   })
 
   if (error) {
-    console.log("Testing RRRRRL", error.status)
     if (error.status === 422 || error.message.toLowerCase().includes("already")) {
        return redirect('/login?error=It looks like you already have an account with this email. Try logging in!')
     }
-    return redirect('/login?error=Check your credentials')
+    return redirect(`/login?error=${encodeURIComponent(error.message)}`)
+  }
+
+  // If email confirmation is required, Supabase returns a user but no session yet
+  if (!data.session) {
+    return redirect('/login?message=' + encodeURIComponent('Check your email to confirm your account before logging in.'))
   }
 
   return redirect('/dashboard')
@@ -65,18 +71,39 @@ export async function logout() {
 }
 // User: Forget password
 export async function resetPasswordAction(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createServerSideClient()
   const email = formData.get('email') as string
 
+  // Derive the site origin from the incoming request instead of relying on
+  // an env var that may not be set for every deployment target.
+  const headersList = await headers()
+  const origin = headersList.get('origin') ?? `https://${headersList.get('host')}`
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm-reset`,
+    // Reuse the existing OAuth callback route (it already exchanges the code
+    // for a session) and send the user to the "set new password" page next.
+    redirectTo: `${origin}/auth/callback?next=/update-password`,
   })
 
   if (error) {
-    return redirect('/forgot-password?error=' + error.message)
+    return redirect('/forget-password?error=' + encodeURIComponent(error.message))
   }
 
-  return redirect('/login?error=Check your email for the reset link!')
+  return redirect('/login?message=' + encodeURIComponent('Check your email for the reset link!'))
+}
+
+// User: set a new password after following the reset-password email link
+export async function updatePasswordAction(formData: FormData) {
+  const supabase = await createServerSideClient()
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) {
+    return redirect('/update-password?error=' + encodeURIComponent(error.message))
+  }
+
+  return redirect('/login?message=' + encodeURIComponent('Password updated. Please log in.'))
 }
 
 // Add pantry item for the logged-in user
@@ -111,16 +138,22 @@ export async function addPantryItem(formData: FormData) {
   revalidatePath('/dashboard')  // refresh the dashboard to show the new item
 }
 
-export async function updatePantryItem(id: string, updates: { name: string }) {
+export async function updatePantryItem(id: string, updates: Partial<Pick<PantryItem, 'name' | 'amount' | 'expires_at'>>) {
   const supabase = await createServerSideClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
   const { error } = await supabase
     .from('pantry')
     .update(updates)
     .eq('id', id)
+    .eq('user_id', user.id) // Double-check security: item must belong to this user
 
-  if (!error) {
-    revalidatePath('/pantry') // Refresh the data
+  if (error) {
+    console.error('Update error:', error.message)
+    return { error: error.message }
   }
+  revalidatePath('/dashboard') // Refresh the data
 }
 
 //clear all pantry items for the logged-in user
@@ -164,7 +197,16 @@ export async function deletePantryItem(id: string | number) {
 }
 
 // Generate recipe based on pantry items
-export async function generateRecipe(ingredients: any[]) {
+export async function generateRecipe(ingredients: PantryItem[]) {
+  // Server Actions are callable as public endpoints regardless of UI gating,
+  // so this check is the only thing stopping anonymous calls from burning
+  // through the Groq API quota.
+  const supabase = await createServerSideClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return JSON.stringify({ ideas: [], error: "You must be logged in to generate recipes." })
+  }
+
   try {
     const list = ingredients.map(i => `${i.amount} ${i.unit} of ${i.name}`).join(", ");
     

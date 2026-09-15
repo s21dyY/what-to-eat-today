@@ -1,5 +1,5 @@
 'use client'
-import { ChefHat, Mail, ArrowLeft } from 'lucide-react'
+import { Mail, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { resetPasswordAction } from '@/app/auth/actions'
 
@@ -14,7 +14,7 @@ export default function ForgotPassword() {
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-slate-900">Reset Password</h1>
-            <p className="text-slate-500 text-sm mt-2">Enter your email and we'll send you a link to get back into your kitchen.</p>
+            <p className="text-slate-500 text-sm mt-2">Enter your email and we&apos;ll send you a link to get back into your kitchen.</p>
           </div>
 
           <form action={resetPasswordAction} className="space-y-6">

@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ChefHat, Mail, Lock, Check,AlertCircle } from 'lucide-react'
+import { ChefHat, Check, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { login, signup } from '@/app/auth/actions'
 import { createClient } from '@/supabase/client'
 // Helper function for validation elements
@@ -17,9 +17,11 @@ function ValidationItem({ label, isMet }: { label: string; isMet: boolean }) {
 // Content component
 function LoginContent() {
     const [password, setPassword] = useState('')
+    const [googleError, setGoogleError] = useState<string | null>(null)
     const searchParams = useSearchParams() // This is the line that needs Suspense
-    const errorMsg = searchParams.get('error')
-    
+    const errorMsg = searchParams.get('error') || googleError
+    const successMsg = searchParams.get('message')
+
     const checks = {
       length: password.length >= 8,
       upper: /[A-Z]/.test(password),
@@ -28,6 +30,7 @@ function LoginContent() {
     }
 
     const handleGoogleLogin = async () => {
+      setGoogleError(null)
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -36,6 +39,9 @@ function LoginContent() {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
+      if (error) {
+        setGoogleError(error.message)
+      }
     }
 
     const isPasswordValid = Object.values(checks).every(Boolean)
@@ -48,13 +54,20 @@ function LoginContent() {
                     <ChefHat size={32} />
                 </div>
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h1>
-                <p className="text-slate-500 font-medium">What's for dinner today?</p>
+                <p className="text-slate-500 font-medium">What&apos;s for dinner today?</p>
             </div>  
             
             {errorMsg && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
                     <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
                     <p className="text-sm text-red-800 font-medium leading-tight">{errorMsg}</p>
+                </div>
+            )}
+
+            {successMsg && (
+                <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                    <CheckCircle2 className="text-emerald-500 shrink-0 mt-0.5" size={18} />
+                    <p className="text-sm text-emerald-800 font-medium leading-tight">{successMsg}</p>
                 </div>
             )}
 

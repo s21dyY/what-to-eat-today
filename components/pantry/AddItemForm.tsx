@@ -1,5 +1,5 @@
 import { addPantryItem } from '@/app/auth/actions'
-import { PlusCircle, Utensils, Calendar } from 'lucide-react'
+import { Utensils } from 'lucide-react'
 import { SubmitButton } from './SubmitButton' // Use the SubmitButton we created earlier
 
 export default function AddItemForm() {

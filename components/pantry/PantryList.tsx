@@ -1,10 +1,11 @@
 'use client'
 import PantryItem from './PantryItem';
 import { deletePantryItem } from '@/app/auth/actions';
+import type { PantryItem as PantryItemType } from '@/lib/types';
 
 // PantryList Interface
 interface PantryListProps {
-  initialItems: any[];
+  initialItems: PantryItemType[];
   selectedIds: string[];
   onToggle: (id: string) => void;
 }

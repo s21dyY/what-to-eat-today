@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { Pencil, Check, X } from 'lucide-react' // Using Lucide icons
 import { updatePantryItem } from '@/app/auth/actions'
+import type { PantryItem as PantryItemType } from '@/lib/types'
 
-export default function PantryItem({item, deletePantryItem: deleteItemAction,isSelected, onToggle }: { 
-                                    item: any, deletePantryItem: any,isSelected: boolean,onToggle: () => void }) {
+export default function PantryItem({item, deletePantryItem: deleteItemAction,isSelected, onToggle }: {
+                                    item: PantryItemType, deletePantryItem: () => void, isSelected: boolean, onToggle: () => void }) {
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({
         name: item.name,
@@ -19,12 +20,11 @@ export default function PantryItem({item, deletePantryItem: deleteItemAction,isS
     }
 
     // Expiry Status Calculation
-    const today = new Date();
-    const expiryDate = new Date(item.expires_at);
-    const diffInMs = expiryDate.getTime() - today.getTime();
-    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
-    const isExpired = item.expires_at && diffInDays < 0;
-    const isAlmostExpired = item.expires_at && diffInDays >= 0 && diffInDays <= 3;
+    const diffInDays = item.expires_at
+        ? Math.ceil((new Date(item.expires_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+        : null
+    const isExpired = diffInDays !== null && diffInDays < 0
+    const isAlmostExpired = diffInDays !== null && diffInDays >= 0 && diffInDays <= 3
 
   return (
     <div onClick={onToggle} 
@@ -59,7 +59,7 @@ export default function PantryItem({item, deletePantryItem: deleteItemAction,isS
                   type="number"
                   className="text-xs border rounded px-2 py-1 w-20"
                   value={formData.amount}
-                  onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                  onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})}
                 />
                 <input 
                   type="date"
